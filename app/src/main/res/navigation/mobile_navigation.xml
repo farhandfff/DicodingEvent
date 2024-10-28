@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.dicodingevent.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        app:defaultNavHost="true" />
+
+    <fragment
+        android:id="@+id/navigation_upcoming"
+        android:name="com.example.dicodingevent.ui.upcoming.UpcomingFragment"
+        android:label="@string/title_upcoming_event" />
+
+    <fragment
+        android:id="@+id/navigation_finished"
+        android:name="com.example.dicodingevent.ui.finished.FinishedFragment"
+        android:label="@string/title_finished_event" />
+
+    <fragment
+        android:id="@+id/navigation_detail"
+        android:name="com.example.dicodingevent.ui.detail.DetailFragment"
+        android:label="@string/title_detail" />
+
+    <fragment
+        android:id="@+id/navigation_favorite"
+        android:name="com.example.dicodingevent.ui.favorite.FavoriteFragment"
+        android:label="@string/title_favorite_event" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.example.dicodingevent.ui.Settings.SettingsFragment"
+        android:label="@string/title_setting_event" />
+
+</navigation>

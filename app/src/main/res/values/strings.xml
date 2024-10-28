@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Dicoding Event</string>
+    <string name="title_upcoming_event">Upcoming</string>
+    <string name="title_finished_event">Finished</string>
+    <string name="title_favorite_event">Favorite</string>
+    <string name="title_setting_event">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="title_home">Home</string>
+    <string name="title_finished">Finished Event</string>
+    <string name="title_upcoming">Upcoming Event</string>
+    <string name="title_detail">Detail Event</string>
+    <string name="event_name">Event Name</string>
+    <string name="owner_name">Penyelenggara Acara</string>
+    <string name="favorite_event_description">Your list Favorite</string>
+    <string name="event_time">Waktu Acara</string>
+    <string name="remaining_quota">Sisa Kuota</string>
+    <string name="event_description">Deskripsi Event</string>
+    <string name="button_register">Registrasi</string>
+    <string name="searchbar_hint">Masukan Keyword</string>
+    <string name="title_search">Search Event</string>
+    <string name="image_cover">Image Cover</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_dark_mode">Dark Mode"</string>
+    <string name="dark_mode_description">Enable Dark Mode</string>
+    <string name="refresh">Refresh</string>
+    <string name="search">Cari Item</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="isfavorite">favorite</string>
+    <string name="event_descripsi">event deskripsi</string>
+    <string name="register">register</string>
+    <string name="my_favorite_event">My favorite Event\n</string>
+    <string name="no_event">event\n</string>
+</resources>
