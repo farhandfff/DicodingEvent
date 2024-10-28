@@ -38,7 +38,9 @@ class FinishedFragment : Fragment() {
         setupSearchView()
 
         mainViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
-            Log.d("Finished", error)
+            if (error != null) {
+                Log.d("Finished", error)
+            }
         }
 
         return binding.root
@@ -87,14 +89,16 @@ class FinishedFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        mainViewModel.finishedEvents.observe(viewLifecycleOwner) { events ->
+        mainViewModel.finishedEvent.observe(viewLifecycleOwner) { events ->
             setFinishedEvents(events)
         }
         mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             showLoading(isLoading)
         }
         mainViewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
-            showError(errorMessage)
+            if (errorMessage != null) {
+                showError(errorMessage)
+            }
         }
         mainViewModel.searchEvent.observe(viewLifecycleOwner) {listItem ->
             setFinishedEvents(listItem)

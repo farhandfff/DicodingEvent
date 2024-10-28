@@ -61,14 +61,14 @@ class UpcomingFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        mainViewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
-            setUpcomingEvent(events)
+        mainViewModel.upcomingEvent.observe(viewLifecycleOwner) { events ->
+            events?.let { setUpcomingEvent(it) }
         }
         mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             showLoading(isLoading)
         }
         mainViewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
-            showError(errorMessage)
+            errorMessage?.let { showError(it) }
         }
     }
 

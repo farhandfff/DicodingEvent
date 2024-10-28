@@ -83,21 +83,23 @@ class HomeFragment : Fragment() {
 
     private fun observeViewModel() {
         binding.apply {
-            mainViewModel.upcomingEvents.observe(viewLifecycleOwner) { listItems ->
+            mainViewModel.upcomingEvent.observe(viewLifecycleOwner) { listItems ->
                 setUpcomingEvent(listItems)
             }
 
-            mainViewModel.finishedEvents.observe(viewLifecycleOwner) { listItems ->
+            mainViewModel.finishedEvent.observe(viewLifecycleOwner) { listItems ->
                 setFinishedEvent(listItems)
             }
             mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
                 showLoading(isLoading)
             }
             mainViewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
-                showError(errorMessage)
+                if (errorMessage != null) {
+                    showError(errorMessage)
+                }
                 btnRefresh.setOnClickListener {
-                    mainViewModel.getFinishedEvents()
-                    mainViewModel.getUpcomingEvents()
+                    mainViewModel.getFinishedEvent()
+                    mainViewModel.getUpcomingEvent()
                 }
             }
 

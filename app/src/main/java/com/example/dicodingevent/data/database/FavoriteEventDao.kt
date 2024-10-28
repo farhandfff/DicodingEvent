@@ -1,4 +1,4 @@
-package com.dicoding.myapplication16.data.database
+package com.example.dicodingevent.data.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -17,21 +17,24 @@ interface FavoriteEventDao {
     @Delete
     suspend fun delete(favoriteEvent: EventEntity)
 
-    @Query("SELECT * from favorite ORDER BY id ASC")
+    @Query("SELECT * from events ORDER BY id ASC")
     fun getAllFavoriteEvent(): Flow<List<EventEntity>>
 
     @Query("SELECT * from events WHERE id = :id")
     fun getFavoriteEventById(id: String): LiveData<EventEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFavorite(favorite: EventEntity)
+    suspend fun insertFavorite(favorite: FavoriteEvent)
 
     @Delete
-    suspend fun deleteFavoriteEvent(favorite: EventEntity): Int
+    suspend fun deleteFavoriteEvent(favorite: FavoriteEvent): Int
 
-    @Query("SELECT EXISTS(SELECT * FROM favorite WHERE id = :eventId)")
+    @Query("SELECT EXISTS(SELECT * FROM events WHERE id = :eventId)")
     fun isEventFavorite(eventId: String): Flow<Boolean>
 
-    @Query("SELECT * FROM events WHERE id IN (SELECT id FROM favorite)")
+    @Query("""
+        SELECT events.* FROM events 
+        INNER JOIN favorite ON events.id = favorite.id
+    """)
     fun getFavoriteEvents(): Flow<List<EventEntity>>
 }

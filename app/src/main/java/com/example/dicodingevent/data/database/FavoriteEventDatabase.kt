@@ -1,13 +1,12 @@
-package com.dicoding.myapplication16.data.database
+package com.example.dicodingevent.data.database
 
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.dicodingevent.data.database.EventEntity
 
-@Database(entities = [EventEntity::class], version = 1)
+@Database(entities = [EventEntity::class, FavoriteEvent::class], version = 1)
 abstract class FavoriteEventRoomDatabase : RoomDatabase() {
     abstract fun favoriteEventDao(): FavoriteEventDao
 

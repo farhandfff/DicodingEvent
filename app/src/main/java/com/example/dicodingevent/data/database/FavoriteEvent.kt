@@ -1,4 +1,4 @@
-package com.dicoding.myapplication16.data.database
+package com.example.dicodingevent.data.database
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo

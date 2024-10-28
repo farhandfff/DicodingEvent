@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
+import com.example.dicodingevent.R
+import com.example.dicodingevent.data.database.EventEntity
+import com.example.dicodingevent.data.response.Event
 import com.example.dicodingevent.databinding.FragmentDetailBinding
 import com.example.dicodingevent.viewmodel.MainViewModel
 import com.example.dicodingevent.viewmodel.ViewModelFactory
@@ -25,28 +28,21 @@ class DetailFragment : Fragment() {
         ViewModelFactory.getInstance(requireContext())
     }
 
+    private var isFavorite = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDetailBinding.inflate(inflater, container, false)
 
-        // Ambil eventId dari arguments
         val eventId = arguments?.getInt("eventId")
         if (eventId != null) {
             mainViewModel.getDetailEvent(eventId)
         }
 
-        // Mengambil data event berdasarkan eventId yang diterima
-        eventId?.let { id ->
-            mainViewModel.isFavorite.observe(viewLifecycleOwner) { event ->
-                // Update UI berdasarkan data event
-            }
-        }
-
         mainViewModel.detailEvent.observe(viewLifecycleOwner) { event ->
             binding.apply {
-                // Update tampilan UI dengan data event yang diterima
                 tvEventName.text = event.name
                 tvEventOwner.text = event.ownerName
                 tvEventTime.text = event.beginTime
@@ -60,11 +56,19 @@ class DetailFragment : Fragment() {
                     startActivity(intent)
                 }
                 favoriteAdd.setOnClickListener {
-                    mainViewModel.toggleFavorite(event, requireContext())
+                    handleFavoriteClick(event)
                 }
             }
-            // Menampilkan gambar menggunakan Glide
-            Glide.with(requireContext()).load(event.mediaCover).into(binding.ivEventImage)
+
+            Glide.with(requireContext())
+                .load(event.mediaCover)
+                .into(binding.ivEventImage)
+
+            mainViewModel.checkFavoriteStatus(event.id.toString())
+        }
+
+        mainViewModel.favoriteStatus.observe(viewLifecycleOwner) { isFavorite ->
+            updateFavoriteButton(isFavorite)
         }
 
         mainViewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
@@ -75,6 +79,37 @@ class DetailFragment : Fragment() {
         return binding.root
     }
 
+    private fun updateFavoriteButton(isFavorite: Boolean) {
+        binding.favoriteAdd.setImageResource(
+            if (isFavorite) R.drawable.ic_favorite_filled
+            else R.drawable.ic_favorite_border
+        )
+    }
+
+    private fun handleFavoriteClick(event: Event) {
+        val eventEntity = EventEntity(
+            id = event.id.toString(),
+            name = event.name,
+            ownerName = event.ownerName,
+            beginTime = event.beginTime,
+            mediaCover = event.mediaCover,
+            description = event.description,
+            link = event.link,
+            quota = event.quota,
+            registrants = event.registrants,
+            isActive = true
+        )
+
+        val currentFavoriteStatus = mainViewModel.favoriteStatus.value ?: false
+        if (currentFavoriteStatus) {
+            mainViewModel.removeFromFavorite(eventEntity)
+            showSnackBar("Removed from favorites")
+        } else {
+            mainViewModel.addToFavorite(eventEntity)
+            showSnackBar("Added to favorites")
+        }
+    }
+
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
@@ -82,5 +117,4 @@ class DetailFragment : Fragment() {
     private fun showSnackBar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
-
 }

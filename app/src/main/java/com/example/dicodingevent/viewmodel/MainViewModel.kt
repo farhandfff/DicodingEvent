@@ -6,8 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.dicoding.myapplication16.data.database.FavoriteEvent
+import com.example.dicodingevent.data.database.FavoriteEvent
 import com.example.dicodingevent.data.SettingPreferences
+import com.example.dicodingevent.data.database.EventEntity
 import com.example.dicodingevent.data.repository.EventRepository
 import com.example.dicodingevent.data.response.Event
 import com.example.dicodingevent.data.response.ListEventsItem
@@ -30,19 +31,21 @@ class MainViewModel(
     val detailEvent: LiveData<Event> = _detailEvent
     private val _searchEvent = MutableLiveData<List<ListEventsItem>>()
     val searchEvent: LiveData<List<ListEventsItem>> = _searchEvent
-    private val _allFavoriteEvents = MutableLiveData<List<FavoriteEvent>>()
-    val allFavoriteEvents: LiveData<List<FavoriteEvent>> get() = _allFavoriteEvents
+    private val _favoriteEvents = MutableLiveData<List<EventEntity>>()
+    val favoriteEvents: LiveData<List<EventEntity>> = _favoriteEvents
+    private val _favoriteStatus = MutableLiveData<Boolean>()
+    val favoriteStatus: LiveData<Boolean> = _favoriteStatus
 
     init {
         getUpcomingEvent()
         getFinishedEvent()
-        getAllFavoriteEvent()
+        getFavoriteEvents()
     }
 
     fun getUpcomingEvent() {
         _isLoading.value = true
         viewModelScope.launch {
-            val result = eventRepository.getUpcomingEvent()
+            val result = eventRepository.getUpcomingEvents()
             _isLoading.value = false
             result.onSuccess {
                 _upcomingEvent.value = it
@@ -56,7 +59,7 @@ class MainViewModel(
     fun getFinishedEvent() {
         _isLoading.value = true
         viewModelScope.launch {
-            val result = eventRepository.getFinishedEvent()
+            val result = eventRepository.getFinishedEvents()
             _isLoading.value = false
             result.onSuccess {
                 _finishedEvent.value = it
@@ -94,37 +97,60 @@ class MainViewModel(
             }
         }
     }
-
-    fun insertFavoriteEvent(event: FavoriteEvent) {
+    fun checkFavoriteStatus(eventId: String) {
         viewModelScope.launch {
-            val success = eventRepository.insertFavoriteEvent(event)
-            if (!success) {
-                _errorMessage.value = "Failed to insert favorite event"
+            eventRepository.isEventFavorite(eventId)
+                .collect { isFavorite ->
+                    _favoriteStatus.value = isFavorite
+                }
+        }
+    }
+
+    fun addToFavorite(event: EventEntity) {
+        viewModelScope.launch {
+            try {
+                eventRepository.addFavoriteEvent(event)
+                _favoriteStatus.value = true
+                clearErrorMessage()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to add favorite event"
             }
         }
     }
 
-    fun deleteFavoriteEvent(event: FavoriteEvent) {
+    fun removeFromFavorite(event: EventEntity) {
         viewModelScope.launch {
-            val success = eventRepository.deleteFavoriteEvent(event)
-            if (!success) {
-                _errorMessage.value = "Failed to delete favorite event"
+            try {
+                // Delete dari events table
+                eventRepository.deleteFavoriteEvent(event)
+                // Delete dari favorite table
+                eventRepository.deleteFavoriteEvent(FavoriteEvent(id = event.id))
+                _favoriteStatus.value = false
+                clearErrorMessage()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to remove favorite event"
             }
         }
     }
 
-    fun getAllFavoriteEvent() {
-        _isLoading.value = true
-        eventRepository.getAllFavoriteEvent().observeForever { favoriteEvents ->
-            Log.d("MainViewModel", "Favorite Events: $favoriteEvents")
-            _isLoading.value = false
-            _allFavoriteEvents.value = favoriteEvents
-            clearErrorMessage()
+    fun getFavoriteEvents() {
+        viewModelScope.launch {
+            eventRepository.getFavoriteEvents()
+                .collect { events ->
+                    _favoriteEvents.value = events
+                }
         }
     }
 
-    fun getFavoriteEventById(eventId: Int): LiveData<FavoriteEvent> {
-        return eventRepository.getFavoriteEventById(eventId)
+    fun isEventFavorite(eventId: String): LiveData<Boolean> {
+        val result = MutableLiveData<Boolean>()
+        viewModelScope.launch {
+            eventRepository.isEventFavorite(eventId)
+                .collect { isFavorite ->
+                    result.value = isFavorite
+                }
+        }
+        return result
     }
 
     fun getThemeSettings(): LiveData<Boolean> {

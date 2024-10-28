@@ -1,9 +1,9 @@
 package com.example.dicodingevent.data.repository
 
-import com.dicoding.myapplication16.data.database.FavoriteEntity
-import com.dicoding.myapplication16.data.database.FavoriteEventDao
+import com.example.dicodingevent.data.database.FavoriteEventDao
 import com.example.dicodingevent.data.Results
 import com.example.dicodingevent.data.database.EventEntity
+import com.example.dicodingevent.data.database.FavoriteEvent
 import com.example.dicodingevent.data.response.Event
 import com.example.dicodingevent.data.response.ListEventsItem
 import com.example.dicodingevent.data.retrofit.ApiService
@@ -67,20 +67,25 @@ class EventRepository(
         }
     }
 
-    fun getFavoriteEvents(toString: String): Flow<Results<List<EventEntity>>> {
+    fun getFavoriteEvents(): Flow<List<EventEntity>> {
         return favoriteEventDao.getFavoriteEvents()
-            .map { Results.Success(it)}
-            .catch { Results.Error(it.message ?: "An unknown error occurred") }
-
     }
 
-    suspend fun addFavoriteEvent(favoriteId: String) {
-        val favorite = EventEntity(favoriteId)
+    suspend fun addFavoriteEvent(event: EventEntity) {
+        favoriteEventDao.insert(event)
+        val favorite = FavoriteEvent(
+            id = event.id,
+            name = event.name,
+            mediaCover = event.mediaCover
+        )
         favoriteEventDao.insertFavorite(favorite)
     }
 
-    suspend fun deleteFavoriteEvent(favoriteId: String) {
-        val favorite = EventEntity(favoriteId)
+    suspend fun deleteFavoriteEvent(event: EventEntity) {
+        favoriteEventDao.delete(event)
+    }
+
+    suspend fun deleteFavoriteEvent(favorite: FavoriteEvent) {
         favoriteEventDao.deleteFavoriteEvent(favorite)
     }
 
